@@ -201,8 +201,11 @@ public class Picture extends SimplePicture
   {
     Pixel leftPixel = null;
     Pixel rightPixel = null;
+    Pixel topPixel = null;
+    Pixel bottomPixel = null;
     Pixel[][] pixels = this.getPixels2D();
     Color rightColor = null;
+    Color topColor = null;
     for (int row = 0; row < pixels.length; row++)
     {
       for (int col = 0; 
@@ -216,6 +219,14 @@ public class Picture extends SimplePicture
           leftPixel.setColor(Color.BLACK);
         else
           leftPixel.setColor(Color.WHITE);
+        
+        bottomPixel = pixels[row][col];
+        topPixel = pixels[row][col+1];
+        topColor = topPixel.getColor();
+        if (bottomPixel.colorDistance(topColor) > edgeDist)
+        	bottomPixel.setColor(Color.BLACK);
+        else
+        	bottomPixel.setColor(Color.WHITE);
       }
     }
   }
@@ -366,6 +377,43 @@ public class Picture extends SimplePicture
 	      rightPixel.setColor(leftPixel.getColor());
 	    }
 	  }
+  }
+  
+  public void copyTwo(Picture fromPic, 
+          int startRow, int startCol, int sRow, int eRow, int sCol, int eCol)
+  {
+	  Pixel fromPixel = null;
+	  Pixel toPixel = null;
+	  Pixel[][] toPixels = this.getPixels2D();
+	  Pixel[][] fromPixels = fromPic.getPixels2D();
+	  for (int fromRow = sRow, toRow = startRow; 
+			  fromRow < eRow &&
+			  toRow < toPixels.length; 
+			  fromRow++, toRow++)
+	  {
+		  for (int fromCol = sCol, toCol = startCol; 
+				  fromCol < eCol &&
+				  toCol < toPixels[0].length;  
+				  fromCol++, toCol++)
+		  {
+			  fromPixel = fromPixels[fromRow][fromCol];
+			  toPixel = toPixels[toRow][toCol];
+			  toPixel.setColor(fromPixel.getColor());
+		  }
+	  }   
+	}
+  
+  public void myCollage()
+  {
+	  Picture kitten2 = new Picture("images/kitten2.jpg");
+	  Picture snowman = new Picture("images/snowman.jpg");
+	  this.copy(kitten2,0,200);
+	  this.copyTwo(snowman,120,50,50, 90, 20, 60);
+	  Picture g = new Picture(kitten2);
+	  g.grayscale();
+	  this.copy(g,100,0);
+	  
+	  this.write("collage.jpg");
   }
   
 } // this } is the end of class Picture, put all new methods before this
