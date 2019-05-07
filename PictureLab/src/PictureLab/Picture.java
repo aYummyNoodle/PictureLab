@@ -416,4 +416,46 @@ public class Picture extends SimplePicture
 	  this.write("collage.jpg");
   }
   
+  public void blur(int x, int y, int w, int h)
+  {
+	  Pixel[][] pixels = this.getPixels2D();
+	  Color averageColor = null;
+	  
+	  for (int r = y; r < h + y; r++)
+	  {
+		  for (int c = x; c < w + x; c++)
+		  {
+			  Pixel pix = pixels[r][c];
+			  int averageRed = 0;
+			  int averageGreen = 0;
+			  int averageBlue = 0;
+			  int count = 0;
+			  
+			  for (int tempR = r - h/2; tempR <= r + h/2 && tempR < pixels.length; tempR++)
+			  {
+				  for (int tempC = c - w/2; tempC <= c + w/2 && tempC < pixels[r].length; c++)
+				  {
+					  if (tempR < 0)
+						  tempR = 0;
+					  if (tempC < 0)
+						  tempC = 0;
+					  
+					  averageRed += pixels[tempR][tempC].getRed();
+					  averageGreen += pixels[tempR][tempC].getGreen();
+					  averageBlue += pixels[tempR][tempC].getBlue();
+					  count++;
+				  }
+			  }
+			  averageRed /= count;
+			  averageBlue /= count;
+			  averageGreen /= count;
+			  
+			  averageColor = new Color(averageRed, averageBlue, averageGreen);
+			  
+			  pix.setColor(averageColor);
+		  }
+	  }
+	  
+  }
+  
 } // this } is the end of class Picture, put all new methods before this
